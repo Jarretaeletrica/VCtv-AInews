@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VCtv AInews</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Source+Serif+4:wght@300;400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --red: #D0021B;
+      --red-dark: #9B0014;
+      --black: #0A0A0A;
+      --dark: #111111;
+      --card: #181818;
+      --border: #2a2a2a;
+      --text: #E8E8E0;
+      --muted: #888;
+      --accent: #FFD700;
+      --mono: 'JetBrains Mono', monospace;
+      --serif: 'Source Serif 4', serif;
+      --display: 'Playfair Display', serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--black);
+      color: var(--text);
+      font-family: var(--serif);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--dark);
+      border-bottom: 3px solid var(--red);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      height: 70px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      background: var(--red);
+      color: #fff;
+      font-family: var(--display);
+      font-weight: 900;
+      font-size: 1.4rem;
+      padding: 4px 10px;
+      letter-spacing: 1px;
+    }
+
+    .logo-name {
+      font-family: var(--display);
+      font-weight: 700;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      color: #fff;
+    }
+
+    .logo-ai {
+      color: var(--red);
+    }
+
+    .header-meta {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-align: right;
+      line-height: 1.8;
+    }
+
+    .edition-strip {
+      background: var(--red);
+      text-align: center;
+      padding: 4px;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ── NAV ── */
+    .nav-bar {
+      background: #1a1a1a;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      padding: 0 2rem;
+    }
+
+    .nav-btn {
+      padding: 10px 16px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      color: var(--text);
+      border-bottom-color: var(--red);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--red);
+      background: rgba(208,2,27,0.12);
+      padding: 3px 8px;
+      border: 1px solid rgba(208,2,27,0.3);
+    }
+
+    .section-title {
+      font-family: var(--display);
+      font-size: 1.4rem;
+      font-weight: 700;
+    }
+
+    .section-count {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    /* ── NEWS GRID ── */
+    .news-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .news-main {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .news-sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    /* Featured article */
+    .article-featured {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 1.5rem;
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .article-featured::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 4px;
+      background: var(--red);
+    }
+
+    .article-featured:hover {
+      border-color: var(--red);
+    }
+
+    .article-featured .article-category {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 0.75rem;
+    }
+
+    .article-featured .article-title {
+      font-family: var(--display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      line-height: 1.3;
+      margin-bottom: 0.75rem;
+      color: #fff;
+    }
+
+    .article-featured .article-body {
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: #bbb;
+      margin-bottom: 1rem;
+    }
+
+    .article-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+    }
+
+    .article-source {
+      color: var(--accent);
+    }
+
+    .article-source a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .article-source a:hover {
+      text-decoration: underline;
+    }
+
+    /* Regular article card */
+    .article-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .article-card:hover {
+      border-color: #444;
+      background: #1e1e1e;
+    }
+
+    .article-card .article-category {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--red);
+    }
+
+    .article-card .article-title {
+      font-family: var(--display);
+      font-size: 1rem;
+      font-weight: 700;
+      line-height: 1.4;
+      color: #eee;
+    }
+
+    .article-card .article-snippet {
+      font-size: 0.82rem;
+      color: #999;
+      line-height: 1.5;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* ── LOADING STATE ── */
+    .skeleton {
+      background: linear-gradient(90deg, #1e1e1e 25%, #252525 50%, #1e1e1e 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 2px;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-title { height: 28px; width: 80%; margin-bottom: 8px; }
+    .skeleton-line { height: 14px; width: 100%; margin-bottom: 6px; }
+    .skeleton-line.short { width: 60%; }
+
+    /* ── CUSTOM GENERATOR ── */
+    .generator-panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--red);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .generator-panel h2 {
+      font-family: var(--display);
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .generator-panel h2::before {
+      content: '✦';
+      color: var(--red);
+    }
+
+    .generator-controls {
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 0.75rem;
+      align-items: end;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .control-label {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .control-input {
+      background: #0f0f0f;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      font-family: var(--serif);
+      font-size: 0.9rem;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .control-input:focus {
+      border-color: var(--red);
+    }
+
+    .control-select {
+      background: #0f0f0f;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      cursor: pointer;
+      outline: none;
+      min-width: 120px;
+    }
+
+    .btn-generate {
+      background: var(--red);
+      color: #fff;
+      border: none;
+      padding: 10px 24px;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-generate:hover { background: var(--red-dark); }
+    .btn-generate:disabled { background: #444; cursor: not-allowed; }
+
+    /* Generated article output */
+    .generated-output {
+      margin-top: 1.25rem;
+      display: none;
+    }
+
+    .generated-output.visible { display: block; }
+
+    .generated-article {
+      background: #0f0f0f;
+      border: 1px solid #333;
+      border-left: 3px solid var(--accent);
+      padding: 1.25rem;
+    }
+
+    .generated-article .gen-badge {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .generated-article h3 {
+      font-family: var(--display);
+      font-size: 1.3rem;
+      margin-bottom: 0.75rem;
+      color: #fff;
+    }
+
+    .generated-article p {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: #bbb;
+      white-space: pre-line;
+    }
+
+    .gen-typing {
+      display: inline-block;
+      width: 8px;
+      height: 16px;
+      background: var(--red);
+      animation: blink 0.7s infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--dark);
+      border: 1px solid var(--border);
+      border-top: 3px solid var(--red);
+      max-width: 720px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 2rem;
+      transform: translateY(20px);
+      transition: transform 0.2s;
+    }
+
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal-close {
+      float: right;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal-close:hover { color: var(--red); }
+
+    .modal-category {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--red);
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-title {
+      font-family: var(--display);
+      font-size: 1.8rem;
+      font-weight: 900;
+      line-height: 1.25;
+      color: #fff;
+      margin-bottom: 0.75rem;
+    }
+
+    .modal-meta {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-body {
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: #ccc;
+      white-space: pre-line;
+    }
+
+    /* ── STATUS BAR ── */
+    .status-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--dark);
+      border-top: 1px solid var(--border);
+      padding: 6px 2rem;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      z-index: 50;
+    }
+
+    .status-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #2ecc71;
+      margin-right: 6px;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ── TICKER ── */
+    .ticker-wrap {
+      background: var(--red);
+      overflow: hidden;
+      padding: 5px 0;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      white-space: nowrap;
+    }
+
+    .ticker {
+      display: inline-block;
+      animation: ticker 40s linear infinite;
+    }
+
+    @keyframes ticker {
+      0% { transform: translateX(100vw); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* ── REFRESH BTN ── */
+    .refresh-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+
+    .btn-refresh {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-refresh:hover { border-color: var(--red); color: var(--text); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .news-grid { grid-template-columns: 1fr; }
+      .generator-controls { grid-template-columns: 1fr 1fr; }
+      .btn-generate { grid-column: span 2; }
+    }
+
+    @media (max-width: 600px) {
+      main { padding: 1rem; }
+      .header-top { padding: 0 1rem; }
+      .nav-bar { padding: 0 1rem; }
+      .generator-controls { grid-template-columns: 1fr; }
+      .btn-generate { grid-column: auto; }
+      .article-featured .article-title { font-size: 1.2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-badge">VC</div>
+      <div class="logo-name">tv <span class="logo-ai">AI</span>news</div>
+    </div>
+    <div class="header-meta">
+      <div id="currentDate">—</div>
+      <div id="currentTime">—</div>
+    </div>
+  </div>
+  <div class="edition-strip" id="editionStrip">⬤ EDIÇÃO DIÁRIA</div>
+  <div class="nav-bar">
+    <button class="nav-btn active" onclick="filterCategory('all')">Todas</button>
+    <button class="nav-btn" onclick="filterCategory('Mundo')">Mundo</button>
+    <button class="nav-btn" onclick="filterCategory('Tecnologia')">Tecnologia</button>
+    <button class="nav-btn" onclick="filterCategory('Economia')">Economia</button>
+    <button class="nav-btn" onclick="filterCategory('Ciência')">Ciência</button>
+    <button class="nav-btn" onclick="filterCategory('Brasil')">Brasil</button>
+    <button class="nav-btn" onclick="filterCategory('Esportes')">Esportes</button>
+  </div>
+</header>
+
+<!-- ── TICKER ── -->
+<div class="ticker-wrap">
+  <span class="ticker" id="tickerText">Carregando notícias em tempo real...</span>
+</div>
+
+<!-- ── MAIN ── -->
+<main>
+
+  <!-- GENERATOR PANEL -->
+  <div class="generator-panel">
+    <h2>Gerar Notícia Personalizada</h2>
+    <div class="generator-controls">
+      <div class="control-group" style="grid-column: 1 / -1;">
+        <div class="control-label">Sobre o que deseja uma notícia?</div>
+        <input class="control-input" id="genTopic" type="text" placeholder="Ex: avanços em inteligência artificial, eleições nos EUA, Copa do Mundo..." />
+      </div>
+      <div class="control-group">
+        <div class="control-label">Linhas</div>
+        <select class="control-select" id="genLines">
+          <option value="6">6 linhas</option>
+          <option value="10" selected>10 linhas</option>
+          <option value="18">18 linhas</option>
+          <option value="30">30 linhas</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <div class="control-label">Velocidade</div>
+        <select class="control-select" id="genSpeed">
+          <option value="fast">⚡ Rápido</option>
+          <option value="medium" selected>⚖ Médio</option>
+          <option value="detailed">🔍 Detalhado</option>
+        </select>
+      </div>
+      <button class="btn-generate" id="btnGenerate" onclick="generateCustomNews()">▶ GERAR</button>
+    </div>
+
+    <div class="generated-output" id="generatedOutput">
+      <div class="generated-article" id="generatedArticle">
+        <div class="gen-badge">✦ GERADO POR IA — VCTVAINEWS</div>
+        <h3 id="genTitle"></h3>
+        <p id="genBody"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- REFRESH BAR -->
+  <div class="refresh-bar">
+    <div id="lastUpdated" style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);">Carregando...</div>
+    <button class="btn-refresh" onclick="loadNews()">↻ ATUALIZAR</button>
+  </div>
+
+  <!-- NEWS GRID -->
+  <div id="newsContent">
+    <div style="display:flex;flex-direction:column;gap:1rem;">
+      <!-- Skeleton placeholders -->
+      <div class="article-featured">
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-line"></div>
+        <div class="skeleton skeleton-line"></div>
+        <div class="skeleton skeleton-line short"></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+        <div class="article-card"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-line"></div></div>
+        <div class="article-card"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-line"></div></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── MODAL ── -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-category" id="modalCategory"></div>
+    <div class="modal-title" id="modalTitle"></div>
+    <div class="modal-meta" id="modalMeta"></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- ── STATUS BAR ── -->
+<div class="status-bar">
+  <div><span class="status-dot"></span><span id="statusText">Conectado</span></div>
+  <div>VCtv AInews — Powered by Pollinations AI</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+//  CONFIG
+// ═══════════════════════════════════════════════
+const RSS_FEEDS = [
+  { url: 'https://feeds.bbci.co.uk/news/world/rss.xml', source: 'BBC World', category: 'Mundo' },
+  { url: 'https://feeds.bbci.co.uk/news/technology/rss.xml', source: 'BBC Tech', category: 'Tecnologia' },
+  { url: 'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml', source: 'BBC Science', category: 'Ciência' },
+  { url: 'https://rss.nytimes.com/services/xml/rss/nyt/World.xml', source: 'NY Times', category: 'Mundo' },
+  { url: 'https://rss.nytimes.com/services/xml/rss/nyt/Technology.xml', source: 'NY Times Tech', category: 'Tecnologia' },
+  { url: 'https://g1.globo.com/rss/g1/economia/rss.xml', source: 'G1 Economia', category: 'Economia' },
+  { url: 'https://g1.globo.com/rss/g1/rss.xml', source: 'G1', category: 'Brasil' },
+];
+
+const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
+let allArticles = [];
+let currentFilter = 'all';
+
+// ═══════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  updateClock();
+  setInterval(updateClock, 1000);
+  setEditionType();
+  loadNews();
+});
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('currentDate').textContent =
+    now.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
+  document.getElementById('currentTime').textContent =
+    now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + ' BRT';
+}
+
+function setEditionType() {
+  const day = new Date().getDay();
+  const strip = document.getElementById('editionStrip');
+  if (day === 0 || day === 6) {
+    strip.textContent = '⬤ EDIÇÃO DE FIM DE SEMANA — COBERTURA AMPLIADA';
+    strip.style.background = '#1a3a6b';
+  } else {
+    strip.textContent = '⬤ EDIÇÃO DIÁRIA — ' + new Date().toLocaleDateString('pt-BR', { weekday: 'long' }).toUpperCase();
+  }
+}
+
+// ═══════════════════════════════════════════════
+//  LOAD NEWS FROM RSS (via rss2json + static JSON)
+// ═══════════════════════════════════════════════
+async function loadNews() {
+  setStatus('Buscando notícias...');
+  allArticles = [];
+
+  // Try loading auto-generated news.json first (from GitHub Actions)
+  let autoNews = [];
+  try {
+    const r = await fetch('news.json?t=' + Date.now());
+    if (r.ok) {
+      const data = await r.json();
+      autoNews = data.articles || [];
+      if (data.edition_type === 'weekend') {
+        document.getElementById('editionStrip').textContent = '⬤ EDIÇÃO DE FIM DE SEMANA — COBERTURA AMPLIADA';
+        document.getElementById('editionStrip').style.background = '#1a3a6b';
+      } else if (data.edition_type === 'special') {
+        document.getElementById('editionStrip').textContent = '★ EDIÇÃO ESPECIAL';
+        document.getElementById('editionStrip').style.background = '#5a3200';
+      }
+    }
+  } catch(e) { /* no static file */ }
+
+  allArticles = [...autoNews];
+
+  // Also fetch live RSS feeds
+  const feedResults = await Promise.allSettled(
+    RSS_FEEDS.map(f => fetchFeed(f))
+  );
+
+  feedResults.forEach(r => {
+    if (r.status === 'fulfilled') allArticles.push(...r.value);
+  });
+
+  // Deduplicate by title
+  const seen = new Set();
+  allArticles = allArticles.filter(a => {
+    const k = a.title.slice(0, 40);
+    if (seen.has(k)) return false;
+    seen.add(k);
+    return true;
+  });
+
+  if (allArticles.length === 0) {
+    document.getElementById('newsContent').innerHTML =
+      `<p style="color:var(--muted);font-family:var(--mono);font-size:0.8rem;text-align:center;padding:3rem;">
+        Nenhuma notícia disponível. Verifique sua conexão ou aguarde a atualização automática.
+      </p>`;
+    setStatus('Sem notícias disponíveis');
+    return;
+  }
+
+  renderNews(allArticles);
+  updateTicker(allArticles);
+  document.getElementById('lastUpdated').textContent =
+    'Atualizado: ' + new Date().toLocaleTimeString('pt-BR');
+  setStatus('Online — ' + allArticles.length + ' notícias carregadas');
+}
+
+async function fetchFeed(feedConfig) {
+  const url = RSS2JSON + encodeURIComponent(feedConfig.url) + '&count=8';
+  const r = await fetch(url);
+  const data = await r.json();
+  if (data.status !== 'ok') return [];
+
+  return data.items.map(item => ({
+    title: item.title,
+    summary: item.description?.replace(/<[^>]+>/g, '').slice(0, 300) || '',
+    source: feedConfig.source,
+    source_url: item.link,
+    category: feedConfig.category,
+    generated_at: item.pubDate || new Date().toISOString(),
+    is_live: true,
+  }));
+}
+
+// ═══════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════
+function renderNews(articles) {
+  const filtered = currentFilter === 'all'
+    ? articles
+    : articles.filter(a => a.category === currentFilter);
+
+  if (filtered.length === 0) {
+    document.getElementById('newsContent').innerHTML =
+      `<p style="color:var(--muted);font-family:var(--mono);font-size:0.8rem;text-align:center;padding:3rem;">
+        Nenhuma notícia nesta categoria no momento.
+      </p>`;
+    return;
+  }
+
+  const [featured, ...rest] = filtered;
+
+  const featuredHTML = `
+    <div class="article-featured" onclick='openModal(${JSON.stringify(featured).replace(/'/g, "&#39;")})'>
+      <div class="article-category">${featured.category}</div>
+      <div class="article-title">${featured.title}</div>
+      <div class="article-body">${featured.summary?.slice(0, 250) || ''}...</div>
+      <div class="article-meta">
+        <span class="article-source">
+          ${featured.source_url
+            ? `<a href="${featured.source_url}" target="_blank" rel="noopener">${featured.source}</a>`
+            : featured.source}
+        </span>
+        <span>${formatDate(featured.generated_at)}</span>
+        ${featured.is_live ? '<span style="color:#2ecc71">⬤ AO VIVO</span>' : ''}
+      </div>
+    </div>`;
+
+  const sidebarH = rest.slice(0, 6).map(a => `
+    <div class="article-card" onclick='openModal(${JSON.stringify(a).replace(/'/g, "&#39;")})'>
+      <div class="article-category">${a.category}</div>
+      <div class="article-title">${a.title}</div>
+      <div class="article-snippet">${a.summary || ''}</div>
+      <div class="article-meta" style="margin-top:4px;">
+        <span class="article-source">
+          ${a.source_url
+            ? `<a href="${a.source_url}" target="_blank" rel="noopener">${a.source}</a>`
+            : a.source}
+        </span>
+      </div>
+    </div>`).join('');
+
+  const bottomH = rest.slice(6).map(a => `
+    <div class="article-card" onclick='openModal(${JSON.stringify(a).replace(/'/g, "&#39;")})'>
+      <div class="article-category">${a.category}</div>
+      <div class="article-title">${a.title}</div>
+      <div class="article-snippet">${a.summary || ''}</div>
+      <div class="article-meta" style="margin-top:4px;">
+        <span class="article-source">
+          ${a.source_url
+            ? `<a href="${a.source_url}" target="_blank" rel="noopener">${a.source}</a>`
+            : a.source}
+        </span>
+      </div>
+    </div>`).join('');
+
+  document.getElementById('newsContent').innerHTML = `
+    <div>
+      <div class="section-header">
+        <span class="section-label">Destaque</span>
+        <span class="section-title">Notícias em Destaque</span>
+        <span class="section-count">${filtered.length} artigos</span>
+      </div>
+      <div class="news-grid">
+        <div class="news-main">${featuredHTML}</div>
+        <div class="news-sidebar">${sidebarH}</div>
+      </div>
+      ${bottomH ? `
+      <div class="section-header">
+        <span class="section-label">Mais notícias</span>
+        <span class="section-title">Últimas Atualizações</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1rem;">
+        ${bottomH}
+      </div>` : ''}
+    </div>`;
+}
+
+function filterCategory(cat) {
+  currentFilter = cat;
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderNews(allArticles);
+}
+
+// ═══════════════════════════════════════════════
+//  MODAL
+// ═══════════════════════════════════════════════
+function openModal(article) {
+  document.getElementById('modalCategory').textContent = article.category;
+  document.getElementById('modalTitle').textContent = article.title;
+  document.getElementById('modalMeta').innerHTML =
+    `<span class="article-source">${
+      article.source_url
+        ? `<a href="${article.source_url}" target="_blank" rel="noopener">${article.source}</a>`
+        : article.source
+    }</span> &nbsp;·&nbsp; ${formatDate(article.generated_at)}
+    ${article.source_url ? ` &nbsp;·&nbsp; <a href="${article.source_url}" target="_blank" rel="noopener" style="color:var(--accent);">Leia o artigo completo →</a>` : ''}`;
+  document.getElementById('modalBody').textContent = article.full_body || article.summary || '';
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal(e) {
+  if (e && e.target !== document.getElementById('modalOverlay') && e.type === 'click') return;
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ═══════════════════════════════════════════════
+//  CUSTOM NEWS GENERATOR (Pollinations AI)
+// ═══════════════════════════════════════════════
+async function generateCustomNews() {
+  const topic = document.getElementById('genTopic').value.trim();
+  if (!topic) { alert('Por favor, escreva sobre o que deseja a notícia.'); return; }
+
+  const lines = parseInt(document.getElementById('genLines').value);
+  const speed = document.getElementById('genSpeed').value;
+  const btn = document.getElementById('btnGenerate');
+
+  btn.disabled = true;
+  btn.textContent = '⟳ GERANDO...';
+
+  const speedConfig = {
+    fast: { model: 'mistral', instruction: 'Seja conciso e direto.' },
+    medium: { model: 'openai', instruction: 'Inclua contexto, causas e consequências.' },
+    detailed: { model: 'openai-large', instruction: 'Seja muito detalhado, incluindo contexto histórico, múltiplas perspectivas, dados e análise aprofundada.' },
+  };
+
+  const cfg = speedConfig[speed];
+  const approxWords = lines * 12;
+  const prompt = `Você é um jornalista profissional da VCtv AInews. Escreva uma notícia jornalística completa e REAL sobre: "${topic}".
+
+FORMATO OBRIGATÓRIO:
+TÍTULO: [título impactante e informativo]
+CORPO: [corpo da notícia em aproximadamente ${approxWords} palavras / ${lines} linhas]
+FONTE: [cite fontes confiáveis reais relacionadas ao tema]
+
+INSTRUÇÕES: ${cfg.instruction} Use linguagem jornalística formal em português brasileiro. Base a notícia em fatos reais e verificáveis sobre o tema. Não invente eventos, use o que é de conhecimento público.`;
+
+  const output = document.getElementById('generatedOutput');
+  const titleEl = document.getElementById('genTitle');
+  const bodyEl = document.getElementById('genBody');
+  output.classList.add('visible');
+  titleEl.textContent = 'Gerando notícia...';
+  bodyEl.innerHTML = '<span class="gen-typing"></span>';
+
+  try {
+    const response = await fetch('https://text.pollinations.ai/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: [{ role: 'user', content: prompt }],
+        model: cfg.model,
+        seed: Math.floor(Math.random() * 9999),
+      }),
+    });
+
+    const text = await response.text();
+    const titleMatch = text.match(/TÍTULO:\s*(.+)/);
+    const bodyMatch = text.match(/CORPO:\s*([\s\S]+?)(?=FONTE:|$)/);
+    const sourceMatch = text.match(/FONTE:\s*([\s\S]+)/);
+
+    titleEl.textContent = titleMatch ? titleMatch[1].trim() : topic;
+    bodyEl.textContent = (bodyMatch ? bodyMatch[1].trim() : text) +
+      (sourceMatch ? '\n\nFonte: ' + sourceMatch[1].trim() : '');
+  } catch (err) {
+    titleEl.textContent = 'Erro ao gerar notícia';
+    bodyEl.textContent = 'Não foi possível conectar ao serviço de IA. Tente novamente.';
+  }
+
+  btn.disabled = false;
+  btn.textContent = '▶ GERAR';
+}
+
+// ═══════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════
+function updateTicker(articles) {
+  const titles = articles.slice(0, 12).map(a => `⬤ ${a.title}`).join('   ');
+  document.getElementById('tickerText').textContent = titles;
+}
+
+function formatDate(str) {
+  if (!str) return '—';
+  try {
+    return new Date(str).toLocaleDateString('pt-BR', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  } catch { return str; }
+}
+
+function setStatus(msg) {
+  document.getElementById('statusText').textContent = msg;
+}
+</script>
+</body>
+</html>
