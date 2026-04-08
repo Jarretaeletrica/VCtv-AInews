@@ -1,0 +1,51 @@
+name: 🗞 VCtv AInews — Geração Automática
+
+on:
+  schedule:
+    # Edição diária — 9h horário de Brasília (12h UTC), seg a sex
+    - cron: '0 12 * * 1-5'
+    # Edição de fim de semana — 10h horário de Brasília (13h UTC), sáb e dom
+    - cron: '0 13 * * 0,6'
+  workflow_dispatch:   # Permite rodar manualmente pelo GitHub
+
+permissions:
+  contents: write
+
+jobs:
+  generate-news:
+    name: Gerar notícias do dia
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout do repositório
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🐍 Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 📡 Gerar notícias com IA
+        run: python generate_news.py
+
+      - name: 🗓 Verificar se news.json foi gerado
+        run: |
+          if [ -f news.json ]; then
+            echo "✅ news.json gerado com sucesso!"
+            cat news.json | python3 -c "import json,sys; d=json.load(sys.stdin); print(f'📰 {d[\"article_count\"]} artigos — {d[\"edition_label\"]}')"
+          else
+            echo "❌ news.json não foi gerado!"
+            exit 1
+          fi
+
+      - name: 💾 Commit e push das notícias
+        run: |
+          git config --local user.email "vctvainews-bot@users.noreply.github.com"
+          git config --local user.name "VCtv AInews Bot"
+          git add news.json
+          git diff --staged --quiet || git commit -m "🗞 Atualização automática — $(date '+%d/%m/%Y %H:%M') BRT"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
